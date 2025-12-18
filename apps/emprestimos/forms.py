@@ -8,18 +8,14 @@ class EmprestimoForm(forms.ModelForm):
         model = Emprestimo
         exclude = ('data_emprestimo',)
         fields = '__all__'
-
         widgets = {
-            'data_devolucao': forms.DateInput(
-                format=('%d/%m/%Y'),
-                attrs={'class': 'form-control',
-                       'placeholder': 'Selecione uma data',
-                       'type': 'date'
-                       }),
-            'data_prevista_devolucao': forms.DateInput(
-                format=('%d/%m/%Y'),
-                attrs={'class': 'form-control',
-                       'placeholder': 'Selecione uma data',
-                       'type': 'date'
-                       }),
-        }
+        'data_devolucao': forms.DateInput(
+            format=('%Y-%m-%d'),
+            attrs={'type': 'date'}
+        ),
+
+        'data_prevista_devolucao': forms.DateInput(
+            format=('%Y-%m-%d'),
+            attrs={'type': 'date'}
+        ),
+}
