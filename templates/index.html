@@ -21,10 +21,10 @@
                             <div class="col-sm-4">
                                 <div class="card" style="width: 18rem;">
                                     <div class="card-header">
-                                        <i class="fa fa-user"></i><B> Alunos</B></a>
+                                        <i class="fa fa-user"></i><B>Alunos</B></a>
                                     </div>
                                     <div class="card-body text-center">
-                                    <h1 class="card-title">0</h1>
+                                    <h1 class="card-title">{{ total_alunos }}</h1>
                                     <h3 class="card-subtitle mb-2 text-muted">Alunos</h3><br>
                                     <a class="btn btn-success btn-sm" href="{% url 'alunos:listar_alunos' %}"><i class="fa fa-plus"></i><span> Cadastrar</span></a>
                                     <!-- <a href="#" class="card-link">Outro link</a> -->
@@ -37,8 +37,8 @@
                                         <i class="fa fa-book"></i><B> Livros</B></a>
                                     </div>
                                     <div class="card-body text-center">
-                                        <h1 class="card-title">0</h1>
-                                        <h3 class="card-subtitle mb-2 text-muted">Livros</h3><br>
+                                        <h1 class="card-title">{{ total_livros }}</h1>
+                                        <h3 class="card-subtitle mb-2 text-muted"> Livros</h3><br>
                                         <a class="btn btn-success btn-sm" href="{% url 'livros:listar_livros' %}"><i class="fa fa-plus"></i><span> Cadastrar</span></a>
                                         <!-- <a href="#" class="card-link">Outro link</a> -->
                                     </div>
@@ -50,7 +50,7 @@
                                         <i class="fa fa-calendar"></i><B> Empréstimos</B></a>
                                     </div>
                                     <div class="card-body text-center">
-                                        <h1 class="card-title">0</h1>
+                                        <h1 class="card-title">{{ total_emprestimos }}</h1>
                                         <h3 class="card-subtitle mb-2 text-muted">Empréstimos</h3><br>
                                         <a class="btn btn-success btn-sm" href="{% url 'emprestimos:listar_emprestimos' %}"><i class="fa fa-plus"></i><span> Agendar</span></a>
                                         <!-- <a href="#" class="card-link">Outro link</a> -->
