@@ -4,7 +4,9 @@ from django.shortcuts import get_object_or_404, redirect, redirect, render
 from .forms import ServicoForm
 from apps.pessoas.models import Pessoa
 from apps.servicos.models import Servico
+from django.contrib.auth.decorators import login_required
 
+@login_required
 # Create your views here.
 def inserir_servico(request):
     template_name = 'servicos/form_servico.html'
@@ -17,13 +19,13 @@ def inserir_servico(request):
     else:
         form = ServicoForm()
     return render(request, template_name, {'form': form})
-
+@login_required
 def listar_servicos(request):
     template_name = 'servicos/listar_servicos.html'
     servicos = Servico.objects.select_related('propriedade__pessoa').all().order_by('-data_servico', '-id')
 
     return render(request, template_name, {'servicos': servicos})
-
+@login_required
 def editar_servico(request, id):
     template_name = 'servicos/form_servico.html'
     servico = get_object_or_404(Servico, id=id) # Use get_object_or_404 por segurança
@@ -37,7 +39,7 @@ def editar_servico(request, id):
             
     context = {'form': form}
     return render(request, template_name, context)
-
+@login_required
 def excluir_servico(request, id):
     template_name = 'servicos/excluir_servico.html'
     servico = Servico.objects.get(id=id)
@@ -47,20 +49,20 @@ def excluir_servico(request, id):
         messages.warning(request, 'O serviço foi excluído com sucesso.')
         return redirect('servicos:listar_servicos')
     return render(request, template_name, context)
-
+@login_required
 def detalhe_servico(request, id):
     template_name = 'servicos/detalhe_servico.html'
     servico = Servico.objects.get(id=id)
     context = {'servico': servico}
     return render(request, template_name, context)
-
+@login_required
 def load_propriedades(request):
     pessoa_id = request.GET.get('pessoa_id')
     propriedades = Propriedade.objects.filter(pessoa_id=pessoa_id).order_by('nome_propriedade')
     return render(request, 'servicos/dropdown_propriedades_options.html', {'propriedades': propriedades})
 
 from datetime import date
-
+@login_required
 def alternar_status(request, id):
     servico = get_object_or_404(Servico, id=id)
     if servico.status == "Pendente":

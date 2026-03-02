@@ -7,4 +7,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('relatorios/', views.relatorios, name='relatorios'), # Verifique se tem o 's' aqui
     path('relatorios/excel/', views.relatorio_excel, name='relatorio_excel'),
+    
 ]

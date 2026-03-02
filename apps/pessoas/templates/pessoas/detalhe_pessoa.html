@@ -19,14 +19,6 @@
         padding: 15px 20px;
     }
 
-    .section-title {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        color: #5a5c69;
-        font-weight: bold;
-        letter-spacing: 0.5px;
-    }
-
     .btn-custom {
         border-radius: 10px;
         font-weight: 600;
@@ -37,10 +29,40 @@
         transform: translateY(-2px);
     }
 
+    .section-title {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: #5a5c69;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        margin-bottom: 0;
+    }
+
     .badge-status {
-        font-size: 0.75rem;
-        padding: 5px 10px;
         border-radius: 20px;
+        padding: 5px 12px;
+        font-size: 0.75rem;
+    }
+
+    .info-item {
+        padding: 15px 0;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #858796;
+        font-weight: 600;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: #343a40;
     }
 
     .servico-item {
@@ -48,135 +70,184 @@
         border-radius: 10px;
         background-color: #f8f9fc;
         margin-bottom: 10px;
-        transition: all 0.2s ease-in-out;
+        border: 1px solid #e3e6f0;
     }
 
     .servico-item:hover {
-        transform: scale(1.01);
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        background-color: #eef1f8;
+        cursor: pointer;
     }
 </style>
 
 <div class="container-fluid py-4">
 
+    <!-- TÍTULO -->
     <div class="card card-custom">
-        <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
-            <h2 class="m-0 text-dark font-weight-bold">
-                <i class="fa fa-user-circle"></i> {{ pessoa.nome }}
-            </h2>
-            <a href="{% url 'pessoas:editar_pessoa' pessoa.id %}" class="btn btn-success btn-sm btn-custom">
-                <i class="fa fa-pencil"></i> Editar
-            </a>
+        <div class="card-header card-header-custom">
+            <h5 class="m-0 font-weight-bold">
+                <i class="fa fa-user-circle mr-2"></i> {{ pessoa.nome }}
+            </h5>
         </div>
+    </div>
 
-        <div class="card-body p-4">
-            <div class="row">
+    <div class="row">
 
-                <!-- COLUNA ESQUERDA -->
-                <div class="col-md-6">
+        <!-- COLUNA ESQUERDA -->
+        <div class="col-md-6">
 
-                    <!-- Informações Pessoais -->
-                    <div class="card card-custom">
-                        <div class="card-header card-header-custom">
-                            <p class="section-title mb-0">
-                                <i class="fa fa-id-card"></i> Informações Pessoais
-                            </p>
-                        </div>
-                        <div class="card-body">
-                            <p><strong>Telefone:</strong> {{ pessoa.telefone|default:"-" }}</p>
-                            <p><strong>Email:</strong> {{ pessoa.email|default:"-" }}</p>
-                            <p><strong>Data de Nascimento:</strong> {{ pessoa.data_nascimento|date:"d/m/Y"|default:"-" }}</p>
-                            <p><strong>Endereço:</strong> {{ pessoa.endereco|default:"-" }}</p>
-                        </div>
+            <!-- Informações Pessoais -->
+            <div class="card card-custom">
+                <div class="card-header card-header-custom">
+                    <p class="section-title">
+                        <i class="fa fa-id-card mr-2"></i> Informações Pessoais
+                    </p>
+                </div>
+                <div class="card-body">
+
+                    <div class="info-item">
+                        <span class="info-label">Telefone</span><br>
+                        <span class="info-value">{{ pessoa.telefone|default:"-" }}</span>
                     </div>
 
-                    <!-- Histórico de Serviços -->
-                    <div class="card card-custom">
-                        <div class="card-header card-header-custom">
-                            <p class="section-title mb-0">
-                                <i class="fa fa-wrench"></i> Histórico de Serviços
-                            </p>
-                        </div>
+                    <div class="info-item">
+                        <span class="info-label">E-mail</span><br>
+                        <span class="info-value">{{ pessoa.email|default:"-" }}</span>
+                    </div>
 
-                        <div class="card-body">
+                    <div class="info-item">
+                        <span class="info-label">Data de Nascimento</span><br>
+                        <span class="info-value">
+                            {{ pessoa.data_nascimento|date:"d/m/Y"|default:"-" }}
+                        </span>
+                    </div>
 
-                            {% with total_servicos=0 %}
-                                {% for prop in pessoa.propriedades.all %}
-                                    {% for servico in prop.servicos.all %}
-                                        <div class="servico-item">
-                                            <strong>{{ servico.nome_servico }}</strong><br>
-                                            <small class="text-muted">
-                                                {{ prop.nome_propriedade }} - {{ servico.data_servico|date:"d/m/Y" }}
-                                            </small>
-                                            <div class="mt-1">
-                                                <span class="badge badge-status {% if servico.status == 'Concluído' %}badge-success{% else %}badge-warning text-dark{% endif %}">
-                                                    {{ servico.status }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    {% empty %}
-                                    {% endfor %}
-                                {% empty %}
-                                {% endfor %}
-                            {% endwith %}
-
-                            {% if not pessoa.propriedades.exists %}
-                                <div class="text-center text-muted py-3">
-                                    <i class="fa fa-info-circle"></i> Nenhum serviço cadastrado.
-                                </div>
-                            {% endif %}
-
-                        </div>
+                    <div class="info-item">
+                        <span class="info-label">Endereço Principal</span><br>
+                        <span class="info-value">{{ pessoa.endereco|default:"-" }}</span>
                     </div>
 
                 </div>
+            </div>
 
-                <!-- COLUNA DIREITA -->
-                <div class="col-md-6">
+            <!-- Histórico de Serviços -->
+            <div class="card card-custom">
+                <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
+                    <p class="section-title">
+                        <i class="fa fa-wrench mr-2"></i> Histórico de Serviços
+                    </p>
+                    <a href="{% url 'servicos:inserir_servico' %}" 
+                       class="btn btn-success btn-sm btn-custom">
+                        <i class="fa fa-plus"></i> Inserir Serviço
+                    </a>
+                </div>
 
-                    <div class="card card-custom">
-                        <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
-                            <p class="section-title mb-0">
-                                <i class="fa fa-home"></i> Propriedades
-                            </p>
-                            <a href="{% url 'pessoas:inserir_propriedade' pessoa.id %}" 
-                               class="btn btn-success btn-sm btn-custom">
-                                <i class="fa fa-pencil-square-o"></i> Gerenciar
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+
+                    {% for prop in pessoa.propriedades.all %}
+                        {% for servico in prop.servicos.all %}
+                            <div class="servico-item border-left 
+                                {% if servico.status == 'Concluído' %}
+                                    border-success
+                                {% else %}
+                                    border-warning
+                                {% endif %}
+                            " style="border-left-width: 5px !important;">
+
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h6 class="font-weight-bold text-dark mb-1">
+                                        {{ servico.nome_servico }}
+                                    </h6>
+
+                                    {% if servico.status == "Concluído" %}
+                                        <span class="badge badge-success badge-status">
+                                            {{ servico.status }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-warning badge-status text-dark">
+                                            {{ servico.status }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <small class="text-muted">
+                                    <i class="fa fa-home"></i> {{ prop.nome_propriedade }}<br>
+                                    <i class="fa fa-calendar"></i> {{ servico.data_servico|date:"d/m/Y" }}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% empty %}
+                        <div class="text-center py-4">
+                            <i class="fa fa-folder-open-o fa-2x text-light mb-2"></i>
+                            <p class="text-muted mb-3">Nenhum serviço registrado.</p>
+
+                            <a href="{% url 'servicos:inserir_servico' %}" 
+                               class="btn btn-outline-success btn-custom">
+                                <i class="fa fa-plus"></i> Inserir Primeiro Serviço
                             </a>
                         </div>
+                    {% endfor %}
 
-                        <div class="card-body">
+                </div>
+            </div>
 
-                            {% for prop in pessoa.propriedades.all %}
-                                <div class="servico-item">
-                                    <strong>{{ prop.nome_propriedade }}</strong><br>
+            <!-- BOTÃO VOLTAR -->
+            <a href="javascript:history.back()" 
+               class="btn btn-dark btn-custom shadow-sm mb-4">
+                <i class="fa fa-arrow-left"></i> Voltar
+            </a>
+
+        </div>
+
+        <!-- COLUNA DIREITA -->
+        <div class="col-md-6">
+
+            <div class="card card-custom">
+                <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
+                    <p class="section-title">
+                        <i class="fa fa-home mr-2"></i> Propriedades Vinculadas
+                    </p>
+                    
+                    <a href="{% url 'pessoas:inserir_propriedade' pessoa.id %}" 
+                       class="btn btn-success btn-sm btn-custom">
+                        <i class="fa fa-pencil-square-o"></i> Gerenciar
+                    </a>
+                </div>
+
+                <div class="card-body">
+
+                    {% for prop in pessoa.propriedades.all %}
+                        <a href="{% url 'pessoas:inserir_propriedade' pessoa.id %}" 
+                           class="text-decoration-none">
+
+                            <div class="servico-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 text-primary font-weight-bold">
+                                        {{ prop.nome_propriedade }}
+                                    </h6>
                                     <small class="text-muted">
-                                        <i class="fa fa-map-marker text-danger"></i>
+                                        <i class="fa fa-map-marker"></i>
                                         {{ prop.get_localidade_display }}
                                     </small>
                                 </div>
-                            {% empty %}
-                                <div class="text-center text-muted py-3">
-                                    Nenhuma propriedade cadastrada.
-                                </div>
-                            {% endfor %}
+                                <i class="fa fa-chevron-right text-muted"></i>
+                            </div>
 
+                        </a>
+                    {% empty %}
+                        <div class="text-center py-5">
+                            <i class="fa fa-map-o fa-3x text-light mb-3"></i>
+                            <p class="text-muted mb-4">Nenhuma propriedade cadastrada.</p>
+                            <a href="{% url 'pessoas:inserir_propriedade' pessoa.id %}" 
+                               class="btn btn-outline-success btn-custom">
+                                Cadastrar Primeira Propriedade
+                            </a>
                         </div>
-                    </div>
+                    {% endfor %}
 
                 </div>
-
-            </div>
-
-            <div class="mt-4">
-                <a href="{% url 'pessoas:listar_pessoas' %}" 
-                   class="btn btn-dark btn-custom shadow-sm">
-                    <i class="fa fa-arrow-left"></i> Voltar
-                </a>
             </div>
 
         </div>
     </div>
-
 </div>
 {% endblock %}

@@ -62,7 +62,11 @@
     }
 
     .data-stack { font-size: 0.8rem; line-height: 1.2; }
-
+    .card-custom { 
+        border-radius: 15px; 
+        border: none; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    }
     .btn-status { background: none; border: none; padding: 0; cursor: pointer; transition: transform 0.2s; }
     .btn-status:hover { transform: scale(1.1); }
 
@@ -85,7 +89,7 @@
         </div>
     </div>
 
-    <div class="card mb-4">
+    <div class="card-custom mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background-color: #f1f1f1;">
             <h2 class="m-0 text-dark"><i class="fa fa-list-alt "></i> Listagem de Serviços</h2>
             <a href="{% url 'servicos:inserir_servico' %}" class="btn btn-success btn-custom shadow-sm px-5">

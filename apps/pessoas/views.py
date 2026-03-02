@@ -4,7 +4,8 @@ from apps.servicos.models import Servico
 from .forms import PessoaForm, PropriedadeFormSet
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Pessoa
-
+from django.contrib.auth.decorators import login_required
+@login_required
 def inserir_pessoa(request):
     template_name = 'pessoas/form_pessoa.html'
     if request.method == 'POST':
@@ -18,19 +19,18 @@ def inserir_pessoa(request):
     return render(request, template_name, context)
 
 from django.db.models import Prefetch
-
+@login_required
 def listar_pessoas(request):
     template_name = 'pessoas/listar_pessoas.html'
 
-    pessoas = Pessoa.objects.prefetch_related(
+    pessoas = Pessoa.objects.order_by('nome').prefetch_related(
         Prefetch(
             'propriedades__servicos',
             queryset=Servico.objects.order_by('-id'),
             to_attr='servicos_ordenados'
         )
-    )
+    ).order_by('-id')
 
-    # definir o último serviço global da pessoa
     for pessoa in pessoas:
         ultimo = None
 
@@ -43,7 +43,7 @@ def listar_pessoas(request):
 
     context = {'pessoas': pessoas}
     return render(request, template_name, context)
-
+@login_required
 def editar_pessoa(request, id):
     template_name = 'pessoas/form_pessoa.html'
     pessoa = get_object_or_404(Pessoa, id=id)
@@ -54,7 +54,7 @@ def editar_pessoa(request, id):
         messages.success(request, 'Os dados foram atualizados com sucesso.')
         return redirect('pessoas:listar_pessoas')
     return render(request, template_name, context)
-
+@login_required
 def excluir_pessoa(request, id):
     
     template_name = 'pessoas/excluir_pessoa.html'
@@ -68,17 +68,18 @@ def excluir_pessoa(request, id):
         return redirect('pessoas:listar_pessoas')
     return render(request, template_name, context)
 
-
+@login_required
 def detalhe_pessoa(request, id):
     template_name = 'pessoas/detalhe_pessoa.html'
     pessoa = get_object_or_404(Pessoa, id=id)
     propriedades = pessoa.propriedades.prefetch_related('servicos')
-    context = {'pessoa': pessoa, 'propriedades': propriedades}
+    servicos = Servico.objects.filter(propriedade__pessoa=pessoa)
+    context = {'pessoa': pessoa, 'propriedades': propriedades, 'servicos': servicos}
     return render(request, template_name, context)
 
 
 from .forms import PropriedadeForm
-
+@login_required
 def inserir_propriedade(request, pessoa_id):
     template_name = 'pessoas/form_propriedade.html'
     pessoa = get_object_or_404(Pessoa, id=pessoa_id)

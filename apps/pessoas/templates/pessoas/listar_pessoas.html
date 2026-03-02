@@ -67,6 +67,11 @@
         vertical-align: middle !important;
         border: none !important;
     }
+    .card-custom { 
+        border-radius: 15px; 
+        border: none; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    }
 
     .servico-coluna { white-space: normal !important; word-wrap: break-word; max-width: 300px; }
     .link-propriedade { color: #007bff; text-decoration: none; font-weight: 600; }
@@ -75,7 +80,7 @@
 </style>
 
 <div class="container-fluid">
-    <div class="card mb-4">
+    <div class="card-custom mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center card-header-custom mt-3">
             <h2 class="m-0 text-dark"><i class="fa fa-users "></i> Listagem de Pessoas</h2>
             <a href="{% url 'pessoas:inserir_pessoa' %}" class="btn btn-success btn-custom shadow-sm px-5">
@@ -135,10 +140,10 @@
                             <td class="text-center">{{ a.data_nascimento|date:"d/m/Y"|default:"-" }}</td>
                             <td class="text-center servico-coluna">
                                 {% if a.ultimo_servico %}
-                                    <strong>{{ a.ultimo_servico.nome_servico }}</strong><br>
+                                    <strong><a href="{% url 'servicos:detalhe_servico' a.ultimo_servico.id %}" class="text-dark">{{ a.ultimo_servico.nome_servico }}</strong><br></a>
 
                                     <small class="text-muted">
-                                        <i class="fa fa-map-marker text-danger"></i>
+                                        <i class="fa fa-map-marker"></i>
                                         {{ a.ultimo_servico.propriedade.nome_propriedade }} -
                                         {{ a.ultimo_servico.propriedade.get_localidade_display }}
                                     </small><br>
@@ -146,6 +151,7 @@
                                     <small class="text-muted">
                                         {{ a.ultimo_servico.data_servico|date:"d/m/Y" }}
                                     </small><br>
+                                    
 
                                     <span class="badge {% if a.ultimo_servico.status == 'Concluído' %}badge-success{% else %}badge-warning text-dark{% endif %}">
                                         {{ a.ultimo_servico.status }}

@@ -3,14 +3,31 @@
 
 {% block conteudo %}
 <style>
-    /* 1. SOMBRA AO PASSAR O MOUSE (HOVER) */
+    .card-custom { 
+        border-radius: 15px; 
+        border: none; 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
+        transition: all 0.3s ease; /* Transição suave */
+    }
+
+    .card-header-custom {
+        background-color: #f1f1f1 !important;
+        border-radius: 15px 15px 0 0 !important;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .btn-custom { border-radius: 10px; padding: 10px 25px; font-weight: 600; }
+    .btn-custom:hover { transform: translateY(-2px); }
+
     .card { 
         border-radius: 15px !important; 
         border: none; 
         box-shadow: 0 4px 8px rgba(0,0,0,0.05); 
         transition: all 0.3s ease; /* Transição suave */
     }
-    
+    .card-custom:hover { 
+        transform: translateY(-5px); /* Sobe levemente */
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important; /* Sombra mais intensa no hover */
+    }
     .card:hover { 
         transform: translateY(-5px); /* Sobe levemente */
         box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important; /* Sombra mais intensa no hover */
@@ -35,7 +52,7 @@
     .modal-header-festive { 
         background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); 
         color: white; 
-        padding: 30px;
+        padding: 20px;
         text-align: center;
         border: none;
     }
@@ -64,17 +81,31 @@
     .breadcrumb { border-radius: 10px; background-color: #f8f7f7; }
 </style>
 
-<div class="content-wrapper">
-    <div class="container-fluid py-4">
-        <div class="card-header bg-transparent border-0 mb-3">
-            <h2 class="text-dark"><i class="fa fa-id-card-o"></i> Sistema de Cadastro - Secretaria de Agricultura</h2>
+<div class="container-fluid">
+    <div class="card-custom mb-4">
+
+        <div class="card-header py-3 d-flex justify-content-between align-items-center card-header-custom mt-3">
+            <h2 class="m-0 text-dark">
+                <i class="fa fa-id-card-o"></i> Sistema de Cadastro - Secretaria de Agricultura
+            </h2>
+
+            <form method="post" action="{% url 'logout' %}" class="m-0">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-custom shadow-sm px-5">
+                    <i class="fa fa-sign-out"></i> Sair
+                </button>
+            </form>
         </div>
 
-        <ol class="breadcrumb p-3">
-            <li class="breadcrumb-item"><a href="{% url 'core:index' %}">Home</a></li>
-            <li class="breadcrumb-item active"></li>
-        </ol>
+        <div class="px-3 mt-3">
+            <ol class="breadcrumb p-3 mt-4">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'core:index' %}">Home</a>
+                </li>
+            </ol>
+        </div>
 
+        <div class="card-body">
         <div class="row">
             <div class="col-sm-3 mb-3">
                 <div class="card h-100">
@@ -130,6 +161,9 @@
         </div>    
     </div>
 </div>
+</div>
+</div>
+</div>
 
 {% if lista_aniversariantes|length > 0 %}
 <div class="modal fade" id="aniversarioModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -162,7 +196,8 @@
         </div>
     </div>
 </div>
-
+    </div>
+</div>
 {{ lista_aniversariantes|json_script:"dadosAniversariantes" }}
 <script>
 document.addEventListener("DOMContentLoaded", function(){

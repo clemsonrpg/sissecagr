@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block titulo %}- Login{% endblock titulo %}
+
+{% block conteudo %}
+<style>
+    /* FUNDO COM TEXTURA SUTIL */
+    body {
+        background-color: #f4f7f6;
+        background-image: radial-gradient(#28a74510 1px, transparent 1px);
+        background-size: 30px 30px; /* Pontilhado bem leve de fundo */
+    }
+
+    .login-container {
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-login {
+        width: 100%;
+        max-width: 420px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+        background: #ffffff;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .card-login:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 45px rgba(0,0,0,0.12);
+    }
+
+    /* HEADER MAIS LIMPO */
+    .card-header-login {
+        background: #fdfdfd !important;
+        border-bottom: 1px solid #f1f1f1 !important;
+        border-top-left-radius: 20px !important;
+        border-top-right-radius: 20px !important;
+        padding: 40px 30px 20px !important;
+    }
+
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        background: #eaf6ed;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+    }
+
+    /* INPUTS COM FOCO ELEGANTE */
+    .form-control-custom {
+        border-radius: 12px;
+        padding: 12px 18px;
+        border: 1.5px solid #eee;
+        background-color: #fdfdfd;
+        font-size: 0.95rem;
+        transition: all 0.3s;
+    }
+
+    .form-control-custom:focus {
+        background-color: #fff;
+        border-color: #28a745;
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.1);
+        outline: none;
+    }
+
+    .input-group-text-custom {
+        background-color: #fdfdfd;
+        border: 1.5px solid #eee;
+        border-right: none;
+        border-radius: 12px 0 0 12px;
+        color: #999;
+    }
+
+    /* BOTÃO COM GRADIENTE SUTIL */
+    .btn-login {
+        border-radius: 12px;
+        padding: 14px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        background: linear-gradient(to right, #28a745, #218838);
+        border: none;
+        transition: all 0.3s;
+        margin-top: 10px;
+    }
+
+    .btn-login:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 20px rgba(40, 167, 69, 0.2);
+        filter: brightness(1.1);
+    }
+
+    .login-footer-text {
+        font-size: 0.8rem;
+        color: #adb5bd;
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="container login-container">
+    <div class="card card-login">
+        
+        <div class="card-header-login text-center">
+            <div class="icon-circle">
+                <i class="fa fa-leaf text-success" style="font-size: 28px;"></i>
+            </div>
+            <h4 class="text-dark font-weight-bold mb-1" style="letter-spacing: -0.5px;">
+                Secretaria de Agricultura
+            </h4>
+            <p class="mb-0 text-muted small text-uppercase font-weight-bold" style="letter-spacing: 1px;">
+                Acesso ao Painel
+            </p>
+        </div>
+        
+        <div class="card-body p-4">
+            {% include 'partials/messages.html' %}
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group mb-4">
+                    <label class="small font-weight-bold text-muted ml-1">USUÁRIO</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text input-group-text-custom">
+                                <i class="fa fa-user-o"></i>
+                            </span>
+                        </div>
+                        <input type="text"
+                               name="username"
+                               class="form-control form-control-custom"
+                               placeholder="Seu usuário"
+                               required>
+                    </div>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label class="small font-weight-bold text-muted ml-1">SENHA</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text input-group-text-custom">
+                                <i class="fa fa-lock"></i>
+                            </span>
+                        </div>
+                        <input type="password"
+                               name="password"
+                               class="form-control form-control-custom"
+                               style="border-top-left-radius: 0; border-bottom-left-radius: 0;"
+                               placeholder="Sua senha secreta"
+                               required>
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="btn btn-success btn-block btn-login shadow-sm text-white">
+                    ENTRAR <i class="fa fa-angle-right ml-2"></i>
+                </button>
+            </form>
+        </div>
+        
+        <div class="card-footer bg-transparent border-0 text-center pb-4">
+            <div class="login-footer-text text-uppercase">
+                <p>Sistema de cadastro</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock conteudo %}

@@ -5,7 +5,52 @@
 
 {% block conteudo %}
 <style>
-    /* ESTILIZAÇÃO PADRÃO */
+    .btn-custom { border-radius: 10px; padding: 10px 25px; font-weight: 600; }
+    .btn-custom:hover { transform: translateY(-2px); }
+    .btn-status { background: none; border: none; padding: 0; cursor: pointer; transition: transform 0.2s; }
+    .btn-status:hover { transform: scale(1.1); }
+    .table-responsive {
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+        padding: 15px !important;
+    }
+    .table {
+        border-collapse: separate;
+        border-spacing: 0 10px;
+        margin-top: -10px;
+    }
+
+    .table thead th {
+        background-color: #f8f9fc !important;
+        color: #000000 !important;
+        border-bottom: 2px solid #e3e6f0 !important;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        padding: 18px 10px !important;
+        border-top: none !important;
+    }
+
+    .table tbody tr {
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        position: relative;
+    }
+
+    .table tbody tr:hover {
+        transform: scale(1.01);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1) !important;
+        z-index: 99;
+        position: relative;
+    }
+
+    .table td {
+        padding: 12px 10px !important;
+        vertical-align: middle !important;
+        border: none !important;
+    }
+    /* ESTILIZAÇÃO PADRÃO - MANTIDA */
     .card { border-radius: 15px !important; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: all 0.3s ease; background-color: #fff; }
     .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important; }
     .card-header { background-color: #f1f1f1 !important; border-bottom: 1px solid #e3e6f0 !important; border-top-left-radius: 15px !important; border-top-right-radius: 15px !important; padding: 15px 20px; font-weight: bold; color: #333; }
@@ -21,36 +66,47 @@
 
         <div class="card-header d-flex align-items-center justify-content-between mb-3">
             <h2 class="text-dark font-weight-bold mb-0">
-                <i class="fa fa-bar-chart text-primary"></i> Relatórios Estatísticos
+                <i class="fa fa-bar-chart"></i> Relatórios Estatísticos
             </h2>
-            {% if request.GET.localidade %}
+            {% if request.GET.localidade or request.GET.servico_tipo %}
                 <div class="filter-indicator">
-                    <i class="fa fa-filter"></i> Filtrado por: <strong>{{ localidade_nome_exibicao }}</strong>
-                    <a href="{% url 'core:relatorios' %}" class="ml-2 text-danger" title="Remover filtro"><i class="fa fa-times-circle"></i></a>
+                    <i class="fa fa-filter"></i> Filtro Ativo: 
+                    <strong>{% if request.GET.localidade %}{{ localidade_nome_exibicao }}{% endif %}</strong>
+                    <strong>{% if request.GET.servico_tipo %} | {{ request.GET.servico_tipo }}{% endif %}</strong>
+                    <a href="{% url 'core:relatorios' %}" class="ml-2 text-danger" title="Remover filtros"><i class="fa fa-times-circle"></i></a>
                 </div>
             {% endif %}
         </div>
 
         <ol class="breadcrumb p-3 shadow-sm">
             <li class="breadcrumb-item"><a href="{% url 'core:index' %}">Home</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'core:relatorios' %}">Painel de Performance</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'core:relatorios' %}">Relatórios</a></li>
         </ol>
 
         <div class="card mb-4 shadow-sm" style="border-top: 4px solid #4e73df;">
             <div class="card-body">
                 <form method="GET" action="." class="row align-items-end">
-                    <div class="col-md-9">
+                    <div class="col-md-5">
                         <label class="small font-weight-bold text-muted">Região / Localidade</label>
                         <select name="localidade" class="form-control shadow-sm">
-                            <option value="">Todas as Localidades (Visão Geral)</option>
+                            <option value="">Todas as Localidades</option>
                             {% for valor, label in lista_localidades_choices %}
                                 <option value="{{ valor }}" {% if request.GET.localidade == valor %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
                     </div>
+                    <div class="col-md-4">
+                        <label class="small font-weight-bold text-muted">Tipo de Serviço</label>
+                        <select name="servico_tipo" class="form-control shadow-sm">
+                            <option value="">Todos os Tipos</option>
+                            {% for s_tipo in tipos_servicos_disponiveis %}
+                                <option value="{{ s_tipo }}" {% if request.GET.servico_tipo == s_tipo %}selected{% endif %}>{{ s_tipo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-primary btn-block shadow-sm">
-                            <i class="fa fa-refresh"></i> Atualizar Painel
+                            <i class="fa fa-filter"></i> Filtrar Painel
                         </button>
                     </div>
                 </form>
@@ -63,7 +119,6 @@
                     <div class="card-header"><i class="fa fa-check-circle text-success"></i> Realizados (Mês)</div>
                     <div class="card-body text-center py-4">
                         <h1 class="display-4 font-weight-bold text-success mb-0">{{ total_mes }}</h1>
-                        <p class="text-muted ">{% if localidade_nome_exibicao %}Em {{ localidade_nome_exibicao }}{% else %}Serviços Realizados{% endif %}</p>
                     </div>
                 </div>
             </div>
@@ -72,20 +127,82 @@
                     <div class="card-header"><i class="fa fa-clock-o text-warning"></i> Aguardando Execução</div>
                     <div class="card-body text-center py-4">
                         <h1 class="display-4 font-weight-bold text-warning mb-0">{{ total_pendentes }}</h1>
-                        <p class="text-muted">Serviços Pendentes</p>
                     </div>
                 </div>
             </div>
             <div class="col-sm-4 mb-3">
                 <div class="card h-100">
-                    <div class="card-header"><i class="fa fa-users text-info"></i> Total Realizado</div>
+                    <div class="card-header"><i class="fa fa-users text-info"></i> Total no Filtro</div>
                     <div class="card-body text-center py-4">
                         <h1 class="display-4 font-weight-bold text-info mb-0">{{ total_servicos_filtrados }}</h1>
-                        <p class="text-muted">Acumulado {% if localidade_nome_exibicao %}na região{% else %}geral{% endif %}</p>
                     </div>
                 </div>
             </div>
         </div>
+
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h5 class="m-0 text-dark"><i class="fa fa-list-ul"></i> Listagem de Serviços Selecionados</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table" width="100%">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Data</th>
+                                    <th class="text-center">Pessoa</th>
+                                    <th class="text-center">Serviço</th>
+                                    <th class="text-center">Localidade</th>
+                                    <th class="text-center">Situação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in servicos_realizados_lista %}
+                                <tr class="shadow-sm">
+                                    <td class="text-center">
+                                        <div class="data-stack text-muted">
+                                            {% if r.status == "Concluído" %}
+                                                <i class="fa fa-calendar-check-o text-success"></i> <b class="text-success">{{ r.data_servico|date:"d/m/y" }}</b>
+                                            {% else %}
+                                                <i class="fa fa-clock-o text-warning"></i> <b class="text-dark">{{ r.data_servico|date:"d/m/y" }}</b>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'pessoas:detalhe_pessoa' r.propriedade.pessoa.id %}" class="font-weight-bold text-dark">
+                                            {{ r.propriedade.pessoa.nome.upper }}
+                                        </a>
+                                    </td>
+                                    <td class="text-center font-weight-bold"><a href="{% url 'servicos:detalhe_servico' r.id %}" class="text-dark">{{ r.nome_servico }}</a></td>
+                                    <td class="text-center">
+                                        <span class="font-weight-bold text-primary">
+                                            <i class="fa fa-map-marker"></i><a href="{% url 'pessoas:inserir_propriedade' r.pessoa.id %}"> {{ r.propriedade.nome_propriedade }}</a>
+                                        </span>
+                                        <br><small class="text-muted">{{ r.propriedade.get_localidade_display }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <form method="POST" action="{% url 'servicos:alternar_status' r.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn-status">
+                                                {% if r.status == "Concluído" %}
+                                                    <span class="badge badge-success badge-status shadow-sm">Concluído</span>
+                                                {% else %}
+                                                    <span class="badge badge-warning badge-status shadow-sm text-dark">Pendente</span>
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 text-muted">Nenhum registro encontrado para os filtros aplicados.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
         <div class="card mt-4 shadow-sm">
             <div class="card-header"><i class="fa fa-area-chart text-primary"></i> {{ titulo_painel }}</div>
@@ -110,8 +227,6 @@
                                         <td class="small font-weight-bold text-muted">{{ item.nome_servico }}</td>
                                         <td class="text-center"><span class="badge badge-primary badge-pill px-3">{{ item.total }}</span></td>
                                     </tr>
-                                    {% empty %}
-                                    <tr><td colspan="2" class="text-center py-4 text-muted">Nenhum serviço registrado</td></tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
@@ -130,52 +245,10 @@
             </div>
         </div>
 
-        <div class="card mt-2 mb-5 shadow-sm" style="border-top: 4px solid #f6c23e;">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="fa fa-list-ul text-warning"></i> {{ subtitulo_lista }}</span>
-                <span class="badge badge-warning">{{ total_pendentes }} pendentes</span>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="text-center">Pessoa</th>
-                                <th class="text-center">Serviço</th>
-                                <th class="text-center">Propriedade</th>
-                                <th class="text-center">Localidade</th>
-                                <th class="text-center">Situação</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for p in servicos_pendentes %}
-                            <tr>
-                                <td class="align-middle font-weight-bold text-center"><a href="{% url 'pessoas:detalhe_pessoa' p.propriedade.pessoa.id%}"class="font-weight-bold text-dark">{{ p.propriedade.pessoa.nome }}</a></td>
-                                <td class="align-middle text-center"><span class="text-primary text-center"><a href="{% url 'servicos:detalhe_servico' p.id %}">{{ p.nome_servico }}</a></span></td>
-                                <td class="align-middle text-center"><i class="fa fa-map-marker"></i><a href="{% url 'pessoas:inserir_propriedade' p.propriedade.pessoa.id %}"> {{ p.propriedade.nome_propriedade }} </a></td>
-                                <td class="align-middle text-center">{{ p.propriedade.get_localidade_display }}</td>
-                                <td class="text-center">
-                                    <form method="POST" action="{% url 'servicos:alternar_status' p.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn">
-                                                <span class="badge badge-warning badge-status  text-dark">Pendente</span>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr><td colspan="5" class="text-center py-4 text-muted">Não há serviços pendentes.</td></tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
         <div class="col-12 card mb-5 p-3 shadow-sm">
             <div class="card-header bg-transparent border-0 d-flex justify-content-start" style="gap: 10px;">
-                <a href="{% url 'core:index' %}" class="btn btn-dark"><i class="fa fa-arrow-left"></i> Voltar</a>
-                <a href="{% url 'core:relatorio_excel' %}?localidade={{ request.GET.localidade }}" class="btn btn-success">
+                <a href="{% url 'core:index' %}" class="btn btn-dark btn-custom"><i class="fa fa-arrow-left"></i> Voltar</a>
+                <a href="{% url 'core:relatorio_excel' %}?localidade={{ request.GET.localidade }}&servico_tipo={{ request.GET.servico_tipo }}" class="btn btn-success btn-custom">
                     <i class="fa fa-file-excel-o"></i> Exportar Excel
                 </a>
             </div>
@@ -187,38 +260,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // ===============================
-    // DADOS SEGUROS VINDO DO BACKEND
-    // ===============================
-
     let dadosLinha = JSON.parse('{{ grafico_dados|default:"{\"labels\":[],\"valores\":[]}"|escapejs }}');
     let dadosDonut = JSON.parse('{{ distribuicao_json|default:"[]"|escapejs }}');
-
-    // ===============================
-    // CONFIG PADRÃO PARA INTEIROS
-    // ===============================
-
-    const integerChartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 1,
-                    precision: 0,
-                    callback: function(value) {
-                        if (Number.isInteger(value)) { return value; }
-                    }
-                }
-            }
-        },
-        plugins: { legend: { display: false } }
-    };
-
-    // ===============================
-    // GRÁFICO DE LINHA
-    // ===============================
 
     new Chart(document.getElementById('graficoServicos'), {
         type: 'line',
@@ -233,12 +276,14 @@
                 tension: 0.3
             }]
         },
-        options: integerChartOptions
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+        }
     });
-
-    // ===============================
-    // GRÁFICO DONUT
-    // ===============================
 
     new Chart(document.getElementById('graficoDonut'), {
         type: 'doughnut',
@@ -246,29 +291,13 @@
             labels: dadosDonut.map(item => item.label),
             datasets: [{
                 data: dadosDonut.map(item => item.total),
-                backgroundColor: [
-                    '#4e73df',
-                    '#1cc88a',
-                    '#36b9cc',
-                    '#f6c23e',
-                    '#e74a3b',
-                    '#858796'
-                ],
+                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'],
                 borderWidth: 2
             }]
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return ` ${context.label}: ${Math.round(context.raw)} serv.`;
-                        }
-                    }
-                }
-            },
+            plugins: { legend: { position: 'bottom' } },
             cutout: '70%'
         }
     });
